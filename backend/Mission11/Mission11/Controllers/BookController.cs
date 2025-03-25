@@ -31,7 +31,7 @@ namespace Mission11.Controllers
             else // If input does not ask to sort titles
             {
                 bookList = _bookContext.Books
-                    .Skip((pageNum-1)*pageSize)
+                    .Skip((pageNum - 1) * pageSize)
                     .Take(pageSize)
                     .ToList();
             }
