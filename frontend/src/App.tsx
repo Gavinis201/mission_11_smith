@@ -1,13 +1,13 @@
 import './App.css';
-import BookList from './BookList';
+import BookList from "./BookList"
 
-// Website only displays the booklist component
 function App() {
+
   return (
     <>
-      <BookList />
+    <BookList />
     </>
-  );
+  )
 }
 
-export default App;
+export default App
