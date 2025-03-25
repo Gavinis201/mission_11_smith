@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/gavinsmith/Desktop/Mission11/backend/Mission11/Mission11/Mission11.csproj": {}
+    "/Users/gavinsmith/Desktop/mission_11_smith/backend/Mission11/Mission11/Mission11.csproj": {}
   },
   "projects": {
-    "/Users/gavinsmith/Desktop/Mission11/backend/Mission11/Mission11/Mission11.csproj": {
+    "/Users/gavinsmith/Desktop/mission_11_smith/backend/Mission11/Mission11/Mission11.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/gavinsmith/Desktop/Mission11/backend/Mission11/Mission11/Mission11.csproj",
+        "projectUniqueName": "/Users/gavinsmith/Desktop/mission_11_smith/backend/Mission11/Mission11/Mission11.csproj",
         "projectName": "Mission11",
-        "projectPath": "/Users/gavinsmith/Desktop/Mission11/backend/Mission11/Mission11/Mission11.csproj",
+        "projectPath": "/Users/gavinsmith/Desktop/mission_11_smith/backend/Mission11/Mission11/Mission11.csproj",
         "packagesPath": "/Users/gavinsmith/.nuget/packages/",
-        "outputPath": "/Users/gavinsmith/Desktop/Mission11/backend/Mission11/Mission11/obj/",
+        "outputPath": "/Users/gavinsmith/Desktop/mission_11_smith/backend/Mission11/Mission11/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/gavinsmith/.nuget/NuGet/NuGet.Config"
