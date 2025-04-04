@@ -2,7 +2,6 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 import { CartItem } from '../types/CartItem';
 
 interface CartContextType {
-  // Everything needed for the cart to work
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (bookId: number) => void;
@@ -12,19 +11,19 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  // Define cart and all cart functions
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((c) => c.bookId === item.bookId);
-      const updatedCart = prevCart.map((c) =>
-        c.bookId === item.bookId
-          ? { ...c, bookQuantity: c.bookQuantity + item.bookQuantity }
-          : c
-      );
-
-      return existingItem ? updatedCart : [...prevCart, item];
+      if (existingItem) {
+        return prevCart.map((c) =>
+          c.bookId === item.bookId
+            ? { ...c, bookQuantity: c.bookQuantity + item.bookQuantity }
+            : c
+        );
+      }
+      return [...prevCart, { ...item, bookQuantity: item.bookQuantity }]; // Ensure bookQuantity is set
     });
   };
 

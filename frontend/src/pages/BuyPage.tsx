@@ -8,19 +8,19 @@ function BuyPage() {
   const navigate = useNavigate();
   const { bookTitle, bookId, bookPrice } = useParams(); // Book data needed to add to CartItem, passed in through route parameters
   const { addToCart } = useCart();
-  const [bookQuantity, setBookQuantity] = useState<number>(1); // Track book quantity, default to 1
+  const [bookQuantity, setBookQuantity] = useState<number>(1);
 
   const handleAddToCart = () => {
-    // Function for adding new CartItem to cart
     const newItem: CartItem = {
       bookId: Number(bookId),
-      bookTitle: bookTitle || 'No Project Found',
+      bookTitle: bookTitle || 'No Title Found',
       bookQuantity,
       bookPrice: Number(bookPrice),
     };
     addToCart(newItem);
     navigate('/cart');
   };
+
   return (
     <>
       <div className="container">
@@ -33,12 +33,13 @@ function BuyPage() {
           <input
             type="number"
             value={bookQuantity}
-            onChange={(x) => setBookQuantity(Number(x.target.value))}
+            onChange={(x) => setBookQuantity(Number(x.target.value) || 1)} // Ensure positive number
+            min="1"
           />
-          <button onClick={handleAddToCart}>Add To Cart</button>
+          <button className="btn btn-primary ms-2" onClick={handleAddToCart}>Add To Cart</button>
         </div>
 
-        <button onClick={() => navigate(-1)}>Go Back</button>
+        <button className="btn btn-secondary mt-2" onClick={() => navigate(-1)}>Go Back</button>
       </div>
     </>
   );
