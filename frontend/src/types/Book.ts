@@ -1,4 +1,10 @@
 export interface Book {
+    bookID: number;
+    publisher: ReactNode;
+    isbn: ReactNode;
+    classification: ReactNode;
+    category: ReactNode;
+    pageCount: ReactNode;
     id: number;
     title: string;
     author: string;
