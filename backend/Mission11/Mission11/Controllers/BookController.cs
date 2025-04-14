@@ -3,41 +3,53 @@ using Mission11.Data;
 
 namespace Mission11.Controllers
 {
+    // Defines the route for the controller: URL will be based on [controller] (e.g., /Book)
     [Route("[controller]")]
     [ApiController]
     public class BookController : ControllerBase
     {
-        private BookDbContext _bookContext; // Liaison to database
+        // Access to the database context for interacting with the Books table
+        private BookDbContext _bookContext; 
 
+        // Constructor to inject the database context
         public BookController(BookDbContext temp)
         {
-            _bookContext = temp; // Create liaison to database
+            _bookContext = temp; 
         }
 
+        // GET: /Book/AllBooks
+        // Returns a paginated list of books and the total count
+        // Optional query parameters:
+        // - pageSize: number of books per page (default 5)
+        // - pageNum: current page number (default 1)
+        // - sortTitles: whether to sort books alphabetically by title
+        // - bookCategories: optional filter by a list of book categories
         [HttpGet("AllBooks")]
-        // Returns list of books and the total number of books in JSON format
-        // The list returned depends on pageSize, pageNum, and sortTitles
         public IActionResult GetBooks(int pageSize = 5, int pageNum = 1, bool sortTitles = false, [FromQuery] List<string>? bookCategories = null)
         {
             IEnumerable<Book> bookList;
 
+            // Start with the full list of books
             var query = _bookContext.Books.AsQueryable();
 
+            // If categories are provided, filter the list
             if (bookCategories != null && bookCategories.Any())
             {
                 query = query.Where(b => bookCategories.Contains(b.Category));
             }
 
+            // Count total books after filtering
             int totalNumBooks = query.Count();
 
-            if (sortTitles) // If input asks to sort titles
+            // If requested, sort the books by title
+            if (sortTitles) 
             {
                 bookList = query.OrderBy(x => x.Title)
-                    .Skip((pageNum - 1) * pageSize)
-                    .Take(pageSize)
+                    .Skip((pageNum - 1) * pageSize) // Skip books for previous pages
+                    .Take(pageSize)                // Take books for current page
                     .ToList();
             }
-            else // If input does not ask to sort titles
+            else // If not sorting
             {
                 bookList = query
                     .Skip((pageNum-1)*pageSize)
@@ -45,6 +57,7 @@ namespace Mission11.Controllers
                     .ToList();
             }
 
+            // Create an anonymous object with books and total count
             var returnObject = new
             {
                 books = bookList,
@@ -54,6 +67,8 @@ namespace Mission11.Controllers
             return Ok(returnObject);
         }
 
+        // GET: /Book/GetBookCategories
+        // Returns a distinct list of all book categories
         [HttpGet("GetBookCategories")]
         public IActionResult GetBookCategories()
         {
@@ -65,6 +80,8 @@ namespace Mission11.Controllers
             return Ok(bookCategories);
         }
 
+        // POST: /Book/AddBook
+        // Adds a new book to the database
         [HttpPost("AddBook")]
         public IActionResult AddBook([FromBody] Book newBook)
         {
@@ -73,11 +90,15 @@ namespace Mission11.Controllers
             return Ok(newBook);
         }
 
+        // PUT: /Book/UpdateBook/{bookId}
+        // Updates an existing book in the database
         [HttpPut("UpdateBook/{bookId}")]
         public IActionResult UpdateBook(int bookId, [FromBody] Book updatedBook)
         {
+            // Find the existing book by its ID
             Book existingBook = _bookContext.Books.Find(bookId);
 
+            // Update all relevant fields
             existingBook.Title = updatedBook.Title;
             existingBook.Author = updatedBook.Author;
             existingBook.Publisher = updatedBook.Publisher;
@@ -93,20 +114,25 @@ namespace Mission11.Controllers
             return Ok(existingBook);
         }
 
+        // DELETE: /Book/DeleteBook/{bookId}
+        // Deletes a book by ID
         [HttpDelete("DeleteBook/{bookId}")]
         public IActionResult DeleteBook(int bookId)
         {
+            // Look for the book in the database
             Book book = _bookContext.Books.Find(bookId);
 
+            // If not found, return 404
             if (book == null)
             {
                 return NotFound(new { message = "Book not found" });
             }
 
+            // Remove the book and save changes
             _bookContext.Books.Remove(book);
             _bookContext.SaveChanges();
 
-            return NoContent();
+            return NoContent(); // 204 status code, no response body
         }
     }
 }
