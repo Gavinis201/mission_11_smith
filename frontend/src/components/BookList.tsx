@@ -118,68 +118,75 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
       </div>
 
       {/* Pagination buttons */}
-      <div className="mt-4 d-flex justify-content-center gap-2">
-        <button
-          disabled={pageNum === 1}
-          onClick={() => setPageNum(pageNum - 1)}
-        >
-          Previous
-        </button>
-
-        {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => setPageNum(index + 1)}
-            disabled={pageNum === index + 1}
-            className="btn btn-outline-secondary"
+      <div className="d-flex flex-column align-items-center gap-3">
+        <div className="d-flex gap-2">
+          <Button
+            variant={pageNum === 1 ? "secondary" : "outline-primary"}
+            disabled={pageNum === 1}
+            onClick={() => setPageNum(pageNum - 1)}
+            size="sm"
+            className="d-flex align-items-center gap-2 shadow-sm"
           >
-            {index + 1}
-          </button>
-        ))}
+            <i className="bi bi-chevron-left"></i>
+            Previous
+          </Button>
 
-        <button
-          disabled={pageNum === totalPages}
-          onClick={() => setPageNum(pageNum + 1)}
-        >
-          Next
-        </button>
+          {[...Array(totalPages)].map((_, index) => (
+            <Button
+              key={index + 1}
+              variant={pageNum === index + 1 ? "primary" : "outline-primary"}
+              onClick={() => setPageNum(index + 1)}
+              size="sm"
+              className="shadow-sm"
+            >
+              {index + 1}
+            </Button>
+          ))}
+
+          <Button
+            variant={pageNum === totalPages ? "secondary" : "outline-primary"}
+            disabled={pageNum === totalPages}
+            onClick={() => setPageNum(pageNum + 1)}
+            size="sm"
+            className="d-flex align-items-center gap-2 shadow-sm"
+          >
+            Next
+            <i className="bi bi-chevron-right"></i>
+          </Button>
+        </div>
+
+        {/* User inputs: Results per page and sort by title */}
+        <div className="d-flex align-items-center gap-4">
+          <Form.Group className="d-flex align-items-center gap-2">
+            <Form.Label className="mb-0 fw-bold text-muted">Results per page:</Form.Label>
+            <Form.Select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPageNum(1);
+              }}
+              className="shadow-sm"
+              style={{ width: '80px' }}
+              size="sm"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Button
+            variant={sortTitles ? "primary" : "outline-primary"}
+            onClick={() => setSortTitles(!sortTitles)}
+            size="sm"
+            className="d-flex align-items-center gap-2 shadow-sm"
+          >
+            <i className={`bi bi-sort-alpha-${sortTitles ? 'down' : 'up'}`}></i>
+            Sort by Title
+          </Button>
+        </div>
       </div>
-
-      {/* Controls Section */}
-      <Card className="shadow-sm mb-4">
-        <Card.Body className="p-3">
-          <Row className="align-items-center g-3">
-            <Col md={6}>
-              <Form.Group className="d-flex align-items-center gap-3">
-                <Form.Label className="mb-0 fw-bold text-muted">Results per page:</Form.Label>
-                <Form.Select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                    setPageNum(1);
-                  }}
-                  className="w-auto shadow-sm"
-                  style={{ minWidth: '80px' }}
-                >
-                  <option value="5">5</option>
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={6} className="text-md-end">
-              <Button
-                variant={sortTitles ? "primary" : "outline-primary"}
-                onClick={() => setSortTitles(!sortTitles)}
-                className="d-flex align-items-center gap-2 shadow-sm"
-              >
-                <i className={`bi bi-sort-alpha-${sortTitles ? 'down' : 'up'}`}></i>
-                Sort by Title
-              </Button>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
     </>
   );
 }

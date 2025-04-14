@@ -1,3 +1,5 @@
+import { Button, Form } from 'react-bootstrap';
+
 interface PaginationProps {
     pageNum: number;
     totalPages: number;
@@ -18,67 +20,74 @@ interface PaginationProps {
     onSortChange,
   }: PaginationProps) => {
     return (
-      <div className="flex item-center justify-center mt-4">
+      <div className="d-flex flex-column align-items-center gap-3">
         {/* Pagination buttons */}
-        <div className="mt-4 d-flex justify-content-center gap-2">
-          <button
+        <div className="d-flex gap-2">
+          <Button
+            variant={pageNum === 1 ? "secondary" : "outline-primary"}
             disabled={pageNum === 1}
             onClick={() => onPageChange(pageNum - 1)}
+            size="sm"
+            className="d-flex align-items-center gap-2 shadow-sm"
           >
+            <i className="bi bi-chevron-left"></i>
             Previous
-          </button>
+          </Button>
   
           {[...Array(totalPages)].map((_, index) => (
-            <button
+            <Button
               key={index + 1}
+              variant={pageNum === index + 1 ? "primary" : "outline-primary"}
               onClick={() => onPageChange(index + 1)}
-              disabled={pageNum === index + 1}
+              size="sm"
+              className="shadow-sm"
             >
               {index + 1}
-            </button>
+            </Button>
           ))}
   
-          <button
+          <Button
+            variant={pageNum === totalPages ? "secondary" : "outline-primary"}
             disabled={pageNum === totalPages}
             onClick={() => onPageChange(pageNum + 1)}
+            size="sm"
+            className="d-flex align-items-center gap-2 shadow-sm"
           >
             Next
-          </button>
+            <i className="bi bi-chevron-right"></i>
+          </Button>
         </div>
   
         {/* User inputs: Results per page and sort by title */}
-        <div className="mt-4 d-flex justify-content-center align-items-center gap-4">
-          <label
-            className="d-flex align-items-center"
-            style={{ whiteSpace: 'nowrap', minWidth: '180px' }}
-          >
-            Results per page:
-            <select
-              className="form-select ms-2"
+        <div className="d-flex align-items-center gap-4">
+          <Form.Group className="d-flex align-items-center gap-2">
+            <Form.Label className="mb-0 fw-bold text-muted">Results per page:</Form.Label>
+            <Form.Select
               value={pageSize}
-              onChange={(p) => {
-                onPageSizeChange(Number(p.target.value));
+              onChange={(e) => {
+                onPageSizeChange(Number(e.target.value));
                 onPageChange(1);
               }}
-              style={{ width: '70px' }}
+              className="shadow-sm"
+              style={{ width: '80px' }}
+              size="sm"
             >
               <option value="5">5</option>
               <option value="10">10</option>
-            </select>
-          </label>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </Form.Select>
+          </Form.Group>
   
-          <label
-            className="d-flex align-items-center ms-3"
-            style={{ whiteSpace: 'nowrap' }}
+          <Button
+            variant={sortTitles ? "primary" : "outline-primary"}
+            onClick={() => onSortChange(!sortTitles)}
+            size="sm"
+            className="d-flex align-items-center gap-2 shadow-sm"
           >
-            Sort by Title?
-            <input
-              type="checkbox"
-              className="form-check-input ms-2"
-              checked={sortTitles}
-              onChange={(cb) => onSortChange(Boolean(cb.target.checked))}
-            />
-          </label>
+            <i className={`bi bi-sort-alpha-${sortTitles ? 'down' : 'up'}`}></i>
+            Sort by Title
+          </Button>
         </div>
       </div>
     );
