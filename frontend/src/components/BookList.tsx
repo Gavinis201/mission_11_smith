@@ -3,6 +3,7 @@ import { Book } from '../types/Book';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { CartItem } from '../types/CartItem';
+import { Row, Col, Form, Button, Card } from 'react-bootstrap';
 
 function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [books, setBooks] = useState<Book[]>([]);
@@ -144,39 +145,41 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
         </button>
       </div>
 
-      {/* User inputs: Results per page and sort by title */}
-      <div className="mt-4 d-flex justify-content-center align-items-center gap-4">
-        <label
-          className="d-flex align-items-center"
-          style={{ whiteSpace: 'nowrap', minWidth: '180px' }}
-        >
-          Results per page:
-          <select
-            className="form-select ms-2"
-            value={pageSize}
-            onChange={(p) => {
-              setPageSize(Number(p.target.value));
-              setPageNum(1);
-            }}
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-          </select>
-        </label>
-
-        <label
-          className="d-flex align-items-center ms-3"
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          Sort by Title?
-          <input
-            type="checkbox"
-            className="form-check-input ms-2"
-            checked={sortTitles}
-            onChange={(cb) => setSortTitles(Boolean(cb.target.checked))}
-          />
-        </label>
-      </div>
+      {/* Controls Section */}
+      <Card className="shadow-sm mb-4">
+        <Card.Body className="p-3">
+          <Row className="align-items-center g-3">
+            <Col md={6}>
+              <Form.Group className="d-flex align-items-center gap-3">
+                <Form.Label className="mb-0 fw-bold text-muted">Results per page:</Form.Label>
+                <Form.Select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setPageNum(1);
+                  }}
+                  className="w-auto shadow-sm"
+                  style={{ minWidth: '80px' }}
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={6} className="text-md-end">
+              <Button
+                variant={sortTitles ? "primary" : "outline-primary"}
+                onClick={() => setSortTitles(!sortTitles)}
+                className="d-flex align-items-center gap-2 shadow-sm"
+              >
+                <i className={`bi bi-sort-alpha-${sortTitles ? 'down' : 'up'}`}></i>
+                Sort by Title
+              </Button>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Book } from '../types/Book';
 import { DeleteBook, fetchBooks } from '../api/BooksAPI';
+import { Container, Card, Form, Button, Row, Col, Table, Badge, Modal, InputGroup, Spinner, Alert } from 'react-bootstrap';
 import Pagination from '../components/Pagination';
 import NewBookForm from '../components/NewBookForm';
 import EditBookForm from '../components/EditBookForm';
@@ -19,6 +20,8 @@ const AdminBooksPage = () => {
   useEffect(() => {
     const loadBooks = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const data = await fetchBooks(pageSize, pageNum, sortTitles, []);
         setBooks(data.books);
         setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
@@ -42,26 +45,133 @@ const AdminBooksPage = () => {
       await DeleteBook(bookId);
       setBooks(books.filter((b) => b.bookID !== bookId));
     } catch (error) {
-      alert('Failed to delete book. Please try again.');
+      setError('Failed to delete book. Please try again.');
     }
   };
 
-  if (loading) return <p>Loading books...</p>;
-  if (error) return <p className="text-red-500">Error: {error}</p>;
+  if (loading) {
+    return (
+      <Container className="py-4 text-center">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </Container>
+    );
+  }
 
   return (
-    <div>
-      <h1>Admin - Books</h1>
-
-      {!showForm && (
-        <button
-          className="btn btn-success mb-3"
-          onClick={() => setShowForm(true)}
-        >
-          Add Book
-        </button>
+    <Container className="py-4">
+      {error && (
+        <Alert variant="danger" className="mb-4">
+          {error}
+        </Alert>
       )}
 
+      {/* Header Section */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 className="display-5 fw-bold text-primary">Book Management</h1>
+          <p className="text-muted">Manage your bookstore inventory</p>
+        </div>
+        <Button 
+          variant="success" 
+          onClick={() => setShowForm(true)}
+          className="d-flex align-items-center gap-2"
+        >
+          <i className="bi bi-plus-lg"></i>
+          Add New Book
+        </Button>
+      </div>
+
+   
+
+      {/* Books Table */}
+      <Card className="shadow-sm">
+        <Card.Body className="p-0">
+          <Table hover responsive className="mb-0">
+            <thead className="bg-light">
+              <tr>
+                <th className="py-3">Title</th>
+                <th className="py-3">Author</th>
+                <th className="py-3">Publisher</th>
+                <th className="py-3">ISBN</th>
+                <th className="py-3">Price</th>
+                <th className="py-3 text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {books.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-4">
+                    No books found
+                  </td>
+                </tr>
+              ) : (
+                books.map((book) => (
+                  <tr key={book.bookID}>
+                    <td className="align-middle">
+                      <div className="d-flex align-items-center">
+                        {book.imageUrl && (
+                          <img 
+                            src={book.imageUrl} 
+                            alt={book.title}
+                            className="me-2"
+                            style={{ width: '40px', height: '60px', objectFit: 'cover' }}
+                          />
+                        )}
+                        <div>
+                          <div className="fw-bold">{book.title}</div>
+                          <small className="text-muted">{book.classification}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="align-middle">{book.author}</td>
+                    <td className="align-middle">{book.publisher}</td>
+                    <td className="align-middle">{book.isbn}</td>
+                    <td className="align-middle">
+                      <span className="fw-bold text-primary">
+                        ${book.price.toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="align-middle text-end">
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => setEditingBook(book)}
+                      >
+                        <i className="bi bi-pencil-fill"></i> Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDelete(book.bookID)}
+                      >
+                        <i className="bi bi-trash-fill"></i> Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+        </Card.Body>
+      </Card>
+
+      {/* Pagination */}
+      <div className="mt-4">
+        <Pagination
+          pageNum={pageNum}
+          pageSize={pageSize}
+          totalPages={totalPages}
+          sortTitles={sortTitles}
+          onPageChange={setPageNum}
+          onPageSizeChange={setPageSize}
+          onSortChange={setSortTitles}
+        />
+      </div>
+
+      {/* New Book Form Modal */}
       {showForm && (
         <NewBookForm
           onSuccess={() => {
@@ -74,6 +184,7 @@ const AdminBooksPage = () => {
         />
       )}
 
+      {/* Edit Book Form Modal */}
       {editingBook && (
         <EditBookForm
           book={editingBook}
@@ -86,62 +197,7 @@ const AdminBooksPage = () => {
           onCancel={() => setEditingBook(null)}
         />
       )}
-
-      <table className="table table-bordered table-striped">
-        <thead className="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Publisher</th>
-            <th>ISBN</th>
-            <th>Classification</th>
-            <th>Category</th>
-            <th>Page Count</th>
-            <th>Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {books.map((b) => (
-            <tr key={b.bookID}>
-              <td>{b.bookID}</td>
-              <td>{b.title}</td>
-              <td>{b.author}</td>
-              <td>{b.publisher}</td>
-              <td>{b.isbn}</td>
-              <td>{b.classification}</td>
-              <td>{b.category}</td>
-              <td>{b.pageCount}</td>
-              <td>${b.price}</td>
-              <td>
-                <button
-                  className="btn btn-primary btn-sm w-100 mb-1"
-                  onClick={() => setEditingBook(b)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger btn-sm w-100"
-                  onClick={() => handleDelete(b.bookID)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Pagination
-        pageNum={pageNum}
-        pageSize={pageSize}
-        totalPages={totalPages}
-        sortTitles={sortTitles}
-        onPageChange={setPageNum}
-        onPageSizeChange={setPageSize}
-        onSortChange={setSortTitles}
-      />
-    </div>
+    </Container>
   );
 };
 
